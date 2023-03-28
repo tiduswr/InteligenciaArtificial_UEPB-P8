@@ -41,7 +41,7 @@ public class Grafo<E> {
         this.iterationListeners = new ArrayList<>();
     }
 
-    public void addAresta(E origem, E destino){
+    private void addAresta(E origem, E destino){
         Vertice<E> start = vertices.get(origem);
         Vertice<E> end = vertices.get(destino);
         if(start == null || end == null)
@@ -50,19 +50,19 @@ public class Grafo<E> {
         this.arestas.add(new Aresta<>(start, end));
     }
 
-    public void addArestas(E[][] arestas){
+    public void addArestasDirecionadas(E[][] arestas){
+        this.arestas.clear();
         for (E[] aresta : arestas) {
             addAresta(aresta[0], aresta[1]);
         }
     }
 
-    public void removeAresta(E origem, E destino){
-        Vertice<E> start = vertices.get(origem);
-        Vertice<E> end = vertices.get(destino);
-        if(start == null || end == null)
-            throw new NullPointerException("Precisa ser um vértice que existe no grafo");
-
-        this.arestas.remove(new Aresta<>(start, end));
+    public void addArestasNaoDirecionadas(E[][] arestas){
+        this.arestas.clear();
+        for (E[] aresta : arestas) {
+            addAresta(aresta[0], aresta[1]);
+            addAresta(aresta[1], aresta[0]);
+        }
     }
 
     public List<Aresta<E>> getArestas(){
@@ -73,41 +73,35 @@ public class Grafo<E> {
         return new ArrayList<>(vertices.values());
     }
 
-    public Map<Vertice<E>, Boolean> buscaEmLarguraCompleta(E verticeInicio) throws NullPointerException{
+    public void buscaEmLarguraCompleta(E verticeInicio) throws NullPointerException{
         //Verifica se o vértice existe no grafo
         Vertice<E> start = vertices.get(verticeInicio);
         if(start == null)
             throw new NullPointerException("Precisa ser um vértice que existe no grafo");
 
         //Mapa de vértices visitados e de proximos vertices
-        Map<Vertice<E>, Boolean> visitados = new HashMap<>();
+        Set<Vertice<E>> visitados = new LinkedHashSet<>();
         Queue<Vertice<E>> proximos = new LinkedList<>();
 
         //Inicia as listas de visitados e proximos
-        visitados.put(start, true);
+        visitados.add(start);
         proximos.add(start);
 
         while(!proximos.isEmpty()){
             //Retira da lista o nó atual de verificação
             Vertice<E> atual = proximos.poll();
-            List<Aresta<E>> adjacenciasNoAtual = arestas.stream()
-                    .filter(aresta -> aresta.origem().equals(atual))
-                    .toList();
 
-            //TODO Pode ser inserido uma lógica para cada nó aqui
             //Notifica listeners
             iterationListeners.forEach(e -> e.listenVertice(atual));
 
             //Adiciona os filhos a lista de próximos
-            for(Aresta<E> adj : adjacenciasNoAtual){
-                if(!visitados.containsKey(adj.destino())){
-                    visitados.put(adj.destino(), true);
-                    proximos.add(adj.destino());
-                }
-            }
+            arestas.stream()
+                .filter(aresta -> aresta.origem().equals(atual) && !visitados.contains(aresta.destino()))
+                .forEach(aresta -> {
+                    visitados.add(aresta.destino());
+                    proximos.add(aresta.destino());
+                });
         }
-
-        return visitados;
     }
 
     public void addIterationListener(IterationListener iterationListener){
