@@ -73,11 +73,13 @@ public class Grafo<E> {
         return new ArrayList<>(vertices.values());
     }
 
-    public void buscaEmLarguraCompleta(E verticeInicio) throws NullPointerException{
+    public void buscaEmLarguraCompleta(E verticeInicio)
+            throws NullPointerException{
         //Verifica se o vértice existe no grafo
         Vertice<E> start = vertices.get(verticeInicio);
         if(start == null)
-            throw new NullPointerException("Precisa ser um vértice que existe no grafo");
+            throw new NullPointerException("Precisa ser um vértice " +
+                    "que existe no grafo");
 
         //Mapa de vértices visitados e de proximos vertices
         Set<Vertice<E>> visitados = new LinkedHashSet<>();
@@ -96,7 +98,8 @@ public class Grafo<E> {
 
             //Adiciona os filhos a lista de próximos
             arestas.stream()
-                .filter(aresta -> aresta.origem().equals(atual) && !visitados.contains(aresta.destino()))
+                .filter(aresta -> aresta.origem().equals(atual)
+                        && !visitados.contains(aresta.destino()))
                 .forEach(aresta -> {
                     visitados.add(aresta.destino());
                     proximos.add(aresta.destino());

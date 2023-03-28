@@ -19,6 +19,7 @@ public class Main {
                 {"A", "B"}, {"A", "C"}, {"B", "C"}, {"B", "D"},
                 {"C", "E"}, {"D", "E"}, {"D", "F"}, {"E", "F"}
         });
+        System.out.println("Grafo de Letras: ");
         grafo.addIterationListener(v -> System.out.print(v + " "));
         grafo.buscaEmLarguraCompleta("C");
     }
@@ -29,6 +30,7 @@ public class Main {
                 {1, 2}, {1, 3}, {2, 3}, {2, 4},
                 {3, 5}, {4, 5}, {4, 6}, {5, 6}
         });
+        System.out.print("Grafo de Numeros: ");
         grafo.addIterationListener(v -> System.out.print(v + " "));
         grafo.buscaEmLarguraCompleta(6);
     }
